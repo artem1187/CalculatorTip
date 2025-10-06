@@ -15,12 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -55,35 +57,34 @@ fun DemoText(message: String, fontSize: Float) {
 }
 @Composable
 fun DemoScreen(modifier: Modifier = Modifier) {
-    var sliderPosition by remember { mutableFloatStateOf(20f) }
+    var sliderPosition by remember { mutableFloatStateOf(0f) }
     val handlePositionChange = { position : Float ->
         sliderPosition = position}
     var summa by remember { mutableStateOf("") }
-    var kolvo by remember { mutableStateOf("") }
-
-
+    var kolvo by remember { mutableStateOf("")}
+    var percent by remember { mutableIntStateOf(0) }
+    var kolvoint = kolvo.toIntOrNull() ?: 0
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(12.dp),
         modifier = Modifier.fillMaxSize().padding(16.dp),
     ) {
-    OutlinedTextField(
-        value = summa,
-        onValueChange = {summa = it},
-        label = { Text("Сумма заказа") },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = Modifier.fillMaxWidth()
-    )
+        OutlinedTextField(
+            value = summa,
+            onValueChange = { summa = it },
+            label = { Text("Сумма заказа") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
 
-    OutlinedTextField(
+        OutlinedTextField(
 
-        value = kolvo,
-        onValueChange = { kolvo = it },
-        label = { Text("Количество блюд") },
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        modifier = Modifier.fillMaxWidth()
-    )
-
+            value = kolvo,
+            onValueChange = { kolvo = it },
+            label = { Text("Количество блюд") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(30.dp))
         DemoSlider(
@@ -91,7 +92,44 @@ fun DemoScreen(modifier: Modifier = Modifier) {
             onPositionChange = handlePositionChange
 
         )
+    Column {
+        percent = when {
+            kolvoint in 1..2 -> 3
+            kolvoint in 3..5 -> 5
+            kolvoint in 6..10 -> 7
+            kolvoint > 10 -> 10
+            else -> 0
+        }
 
+
+        Text("Скидка:",
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(2.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            PercentRadioButton("3%", percent == 3)
+            PercentRadioButton("5%", percent == 5)
+            PercentRadioButton("7%", percent == 7)
+            PercentRadioButton("10%", percent == 10,)
+        }
+    }
+    }
+
+    }
+
+
+@Composable
+fun PercentRadioButton(text: String, selected: Boolean) {
+    Row {
+        RadioButton(
+            selected = selected,
+            onClick = {}
+        )
+        Text(text = text, modifier = Modifier.padding(start = 4.dp),
+            style = MaterialTheme.typography.headlineSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 
